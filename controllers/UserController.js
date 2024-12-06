@@ -6,7 +6,7 @@ const jwt = require('jsonwebtoken');
 
 module.exports = class UserController {
     static async register(req, res) {
-        const { name, email, password, confirmpassword, cnpj, serviceRates, address, contactEmail, contactPhone, website, logo } = req.body;
+        const { name, email, password, confirmpassword, companyName, cnpj, serviceRates, address, contactEmail, contactPhone, website, logo } = req.body;
         //recieving all user data from the form, in individual inputs, and storing them in variables according to their respective models.
 
         // validations
@@ -28,6 +28,10 @@ module.exports = class UserController {
         }
         if (password !== confirmpassword) {
             res.status(422).json({ message: "As senhas precisam ser iguais!" })
+            return
+        }
+        if (!companyName) {
+            res.status(422).json({ message: "O nome da empresa é obrigatório!" })
             return
         }
         if (!cnpj) {
@@ -90,7 +94,7 @@ module.exports = class UserController {
             email,
             password: passwordHash,
             settings: {
-                companyName: name,
+                companyName: companyName,
                 cnpj: cnpj,
                 serviceRates: {
                     maintenance: serviceRates.maintenance,
