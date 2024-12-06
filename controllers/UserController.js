@@ -1,4 +1,5 @@
 const User = require('../models/User');
+const createUserToken = require('../helpers/create-user-token');
 
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
@@ -109,10 +110,43 @@ module.exports = class UserController {
         try {
             await user.save()
 
-            res.status(201).json({ message: "Usuário cadastrado com sucesso!" }) //FIXME: remove this line after createUserToken is implemented
-            //await createUserToken(newUser, req, res) //TODO: create user token
+            await createUserToken(newUser, req, res)
         } catch (error) {
             res.status(500).json({ message: "Erro ao cadastrar usuário!" })
         }
+    }
+
+    static async login(req, res) {
+        const { email, password } = req.body
+
+        // validations
+        if (!email) {
+            res.status(422).json({ message: "O e-mail é obrigatório!" })
+            return
+        }
+        if (!password) {
+            res.status(422).json({ message: "A senha é obrigatória!" })
+            return
+        }
+
+        // check if user exists
+        const user = await User.findOne({ email: email })
+        if (!user) {
+            res.status(404).json({ message: "Usuário não encontrado!" })
+            return
+        }
+
+        // check if password matches
+        const checkPassword = await bcrypt.compare(password, user.password)
+
+        if (!checkPassword) {
+            res.status(422).json({
+                message: "Senha inválida!",
+            })
+            return
+        }
+
+        // create token
+        await createUserToken(user, req, res)
     }
 }
