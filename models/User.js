@@ -59,12 +59,6 @@ const User = mongoose.model(
                     type: String, // image URL or path
                 },
             },
-            budgets: [
-                {
-                    type: Schema.Types.ObjectId,
-                    ref: 'Budget',
-                },
-            ],
         },
         {timestamps: true}, // Adds `createdAt` and `updatedAt`
     )

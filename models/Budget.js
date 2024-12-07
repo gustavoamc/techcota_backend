@@ -3,6 +3,11 @@ const {Schema, default:mongoose} = require('mongoose')
 const Budget = mongoose.model(
     'Budget',
     new Schema({
+        user: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'User',
+            required: true,
+        },
         status: {
             type: String,
             required: true,
