@@ -8,9 +8,9 @@ Este documento descreve as funcionalidades relacionadas ao registro, login e ger
 
 ### **1.1 Função: `register`**
 
-A função `register` é responsável por criar um novo usuário com dados pessoais e empresariais. 
+A função `register` é responsável por criar um novo usuário com dados pessoais e empresariais.
 
-#### **Etapas:**
+**Etapas:**
 
 1. **Recebimento dos Dados do Usuário**:
    - O corpo da requisição (`req.body`) deve conter informações como:
@@ -18,7 +18,7 @@ A função `register` é responsável por criar um novo usuário com dados pesso
      - Email
      - Senha
      - CNPJ
-     - Taxas de serviço
+     - Valores de serviço
      - Endereço
      - Outros detalhes da empresa
 
@@ -72,7 +72,7 @@ A função `register` é responsável por criar um novo usuário com dados pesso
 
 A função `login` autentica um usuário existente na aplicação.
 
-#### **Etapas:**
+**Etapas:**
 
 1. **Recebimento dos Dados de Login**:
    - O corpo da requisição (`req.body`) deve conter:
@@ -111,7 +111,7 @@ A função `login` autentica um usuário existente na aplicação.
 
 A função `getUserSettings` retorna as configurações da empresa associada ao usuário autenticado.
 
-#### **Etapas:**
+**Etapas:**
 
 1. **Autenticação do Usuário**:
    - Verifica se o token JWT está presente e válido.
@@ -133,7 +133,7 @@ A função `getUserSettings` retorna as configurações da empresa associada ao 
 
 A função `updateUserSettings` atualiza as configurações da empresa associada ao usuário autenticado.
 
-#### **Etapas:**
+**Etapas:**
 
 1. **Recebimento dos Dados**:
    - Obtém os novos valores das configurações no corpo da requisição (`req.body`).
@@ -178,3 +178,58 @@ A função `updateUserSettings` atualiza as configurações da empresa associada
 ```
 
 ---
+
+## **3.1 Função: `createBudget`**
+
+A função `createBudget` é responsável por criar um novo orçamento associado ao usuário autenticado.
+
+**Etapas:**
+
+1. **Coleta de Dados**:
+   - Obtém os dados do corpo da requisição (`req.body`), exceto o campo `status`, que é definido como `"waiting"` por padrão.
+
+2. **Autenticação do Usuário**:
+   - Extrai o token JWT usando a função `getToken`.
+   - Obtém o usuário correspondente com a função `getUserByToken`.
+
+3. **Validação do Usuário**:
+   - Se o usuário não for encontrado, retorna uma mensagem de erro (422) com `"Usuário não encontrado!"`.
+
+4. **Validações dos Campos**:
+   - Verifica se todos os campos obrigatórios estão presentes:
+     - `generalVision`, `proposal`, `startDate`, `endDate`, `maintenanceHours`, `creationHours`, `developmentHours`, `integrationHours` e `extraHours`.
+   - Caso algum campo esteja ausente, retorna um erro (422) com uma mensagem correspondente.
+
+5. **Obtenção das Taxas de Serviço**:
+   - Recupera as taxas de serviço (`serviceRates`) associadas à empresa do usuário.
+
+6. **Criação do Orçamento**:
+   - Cria um novo documento de orçamento com os dados fornecidos, incluindo os valores calculados com base nas taxas de serviço.
+
+7. **Associação do Orçamento ao Usuário**:
+   - Salva o orçamento criado no banco de dados.
+   - Adiciona o ID do orçamento à lista de orçamentos do usuário.
+
+8. **Resposta**:
+   - **Sucesso (201)**: Retorna uma mensagem de sucesso e os detalhes do orçamento criado.
+   - **Erro (422)**: Mensagem de erro de validação ou usuário não encontrado.
+   - **Erro (500)**: Mensagem de erro interno com detalhes do problema.
+
+9. **Estrutura do JSON para Teste**:
+
+```json
+   {
+      "message": "Orçamento criado com sucesso!",
+      "budget": {
+         "generalVision": "A general vision of the budget's project.",
+         "proposal": "How the budget's project will be made.",
+         "startDate": "2024-12-01",
+         "endDate": "2024-12-31",
+         "maintenanceHours": 10,
+         "creationHours": 11,
+         "developmentHours": 12,
+         "integrationHours": 13,
+         "extraHours": 14
+      }  
+   }
+```

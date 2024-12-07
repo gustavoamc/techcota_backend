@@ -86,6 +86,10 @@ module.exports = class UserController {
             return
         }
 
+        //TODO: check if email is valid
+
+        //TODO: check if website is valid
+
         // create a password
         const salt = await bcrypt.genSalt(12)
         const passwordHash = await bcrypt.hash(password, salt)

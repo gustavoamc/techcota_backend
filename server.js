@@ -4,6 +4,7 @@ const cors = require('cors');
 const dbConnection = require('./db/connection');
 
 const UserRoutes = require('./routes/UserRoutes');
+const BudgetRoutes = require('./routes/BudgetRoutes');
 
 const app = express();
 
@@ -16,7 +17,7 @@ app.use(express.json());
 
 // Routes
 app.use('/user', UserRoutes);
-//app.use('/budgets', require('./routes/budgetRoutes'));
+app.use('/budget', BudgetRoutes);
 
 // Initialize server
 const PORT = process.env.PORT || 3000;
