@@ -1,4 +1,3 @@
-const dbConnection = require('../db/connection')
 const { Schema, default: mongoose } = require('mongoose')
 
 const User = mongoose.model(
