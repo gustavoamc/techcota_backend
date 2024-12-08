@@ -372,3 +372,80 @@ A função `getBudgetById` é responsável por recuperar um orçamento específi
   ```
   
 ---
+
+## **3.3 Função: `updateBudget`**
+
+A função `updateBudget` atualiza os dados de um orçamento específico associado ao usuário autenticado.
+
+**Etapas:**
+
+1. **Parâmetro de Entrada**:
+   - Obtém o ID do orçamento a partir de `req.params.id`.
+   - Recupera os dados atualizados do orçamento a partir de `req.body`.
+
+2. **Autenticação e Validação**:
+   - Extrai e valida o token JWT.
+   - Verifica se o usuário existe.
+   - Verifica se o orçamento existe no banco de dados.
+   - Confirma se o orçamento pertence ao usuário autenticado.
+
+3. **Validações de Entrada**:
+   - Certifica-se de que todos os campos obrigatórios estão preenchidos: `status`, `generalVision`, `proposal`, `startDate`, `endDate` e todos os campos de horas.
+
+4. **Atualização no Banco de Dados**:
+   - Calcula os novos valores baseados nas horas fornecidas e nas taxas da empresa do usuário.
+   - Atualiza o orçamento no banco de dados.
+
+5. **Resposta**:
+   - **Sucesso (200)**: Mensagem de sucesso e dados atualizados do orçamento.
+   - **Erro (422)**: Mensagens de erro indicando problemas de validação ou autorização.
+   - **Erro (500)**: Mensagem de erro interno.
+
+6. **Estrutura do JSON para Teste**:
+
+```json
+{
+    "maintenanceHours": 10,
+    "creationHours": 11,
+    "developmentHours": 12,
+    "integrationHours": 13,
+    "extraHours": 14,
+    "maintenanceValue": 1000,
+    "creationValue": 1650,
+    "developmentValue": 1800,
+    "integrationValue": 2340,
+    "extraValue": 1680,
+    "status": "waiting",
+    "generalVision": "A general edited vision of the budget's project.",
+    "proposal": "How the budget's project will be edited.",
+    "startDate": "2024-12-01T00:00:00.000Z",
+    "endDate": "2024-12-31T00:00:00.000Z"
+}
+```
+
+---
+
+## **3.4 Função: `deleteBudget`**
+
+A função `deleteBudget` remove um orçamento específico associado ao usuário autenticado.
+
+**Etapas:**
+
+1. **Parâmetro de Entrada**:
+   - Obtém o ID do orçamento a partir de `req.params.id`.
+
+2. **Autenticação e Validação**:
+   - Extrai e valida o token JWT.
+   - Verifica se o usuário existe.
+   - Confirma se o orçamento existe no banco de dados.
+   - Verifica se o orçamento pertence ao usuário autenticado.
+
+3. **Exclusão do Orçamento**:
+   - Remove o orçamento do banco de dados pelo ID.
+
+4. **Resposta**:
+   - **Sucesso (200)**: Mensagem confirmando a exclusão do orçamento.
+   - **Erro (422)**: Mensagens de erro indicando problemas de validação ou autorização.
+   - **Erro (500)**: Mensagem de erro interno.
+
+---
