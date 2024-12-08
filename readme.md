@@ -4,7 +4,7 @@ Este documento descreve as funcionalidades relacionadas ao registro, login e ger
 
 ---
 
-## **1. Descrição do Código**
+## **1. Funções básicas de Usuário**
 
 ### **1.1 Função: `register`**
 
@@ -179,7 +179,9 @@ A função `updateUserSettings` atualiza as configurações da empresa associada
 
 ---
 
-## **3.1 Função: `createBudget`**
+## **3. Funções básicas de Orçamento**
+
+### **3.1 Função: `createBudget`**
 
 A função `createBudget` é responsável por criar um novo orçamento associado ao usuário autenticado.
 
@@ -221,15 +223,152 @@ A função `createBudget` é responsável por criar um novo orçamento associado
    {
       "message": "Orçamento criado com sucesso!",
       "budget": {
-         "generalVision": "A general vision of the budget's project.",
-         "proposal": "How the budget's project will be made.",
-         "startDate": "2024-12-01",
-         "endDate": "2024-12-31",
-         "maintenanceHours": 10,
-         "creationHours": 11,
-         "developmentHours": 12,
-         "integrationHours": 13,
-         "extraHours": 14
+              "generalVision": "Descrição geral do primeiro orçamento...",
+              "proposal": "Proposta do primeiro projeto...",
+              "startDate": "2024-12-01",
+              "endDate": "2024-12-31",
+              "hoursAndValues": {
+                  "maintenanceHours": 10,
+                  "creationHours": 20,
+                  "developmentHours": 15,
+                  "integrationHours": 5,
+                  "extraHours": 2,
+                  "maintenanceValue": 500,
+                  "creationValue": 1000,
+                  "developmentValue": 750,
+                  "integrationValue": 250,
+                  "extraValue": 100
+              },
       }  
    }
 ```
+
+---
+
+## **3.2 Função: `getAllUserBudgets`**
+
+A função `getAllUserBudgets` é responsável por recuperar todos os orçamentos associados ao usuário autenticado, ordenados pela data de criação em ordem decrescente.
+
+**Etapas:**
+
+1. **Autenticação do Usuário**:
+   - Extrai o token JWT utilizando a função `getToken`.
+   - Recupera o usuário correspondente com a função `getUserByToken`.
+
+2. **Validação do Usuário**:
+   - Se o usuário não for encontrado, retorna uma mensagem de erro (422) com `"Usuário não encontrado!"`.
+
+3. **Recuperação dos Orçamentos**:
+   - Busca no banco de dados todos os orçamentos associados ao usuário autenticado, ordenados por data de criação (`createdAt`) em ordem decrescente.
+
+4. **Resposta**:
+   - **Sucesso (200)**: Retorna os orçamentos encontrados em um array.
+   - **Erro (422)**: Mensagem de erro indicando que o usuário não foi encontrado.
+   - **Erro (500)**: Mensagem de erro interno com detalhes do problema.
+
+**Exemplo de Respostas**:
+
+- **Sucesso (200)**:
+
+  ```json
+  {
+      "budgets": [
+          {
+              "_id": "6390f1c79f1a5e001e5b345a",
+              "status": "waiting",
+              "generalVision": "Descrição geral do primeiro orçamento...",
+              "proposal": "Proposta do primeiro projeto...",
+              "startDate": "2024-12-01",
+              "endDate": "2024-12-31",
+              "hoursAndValues": {
+                  "maintenanceHours": 10,
+                  "creationHours": 20,
+                  "developmentHours": 15,
+                  "integrationHours": 5,
+                  "extraHours": 2,
+                  "maintenanceValue": 500,
+                  "creationValue": 1000,
+                  "developmentValue": 750,
+                  "integrationValue": 250,
+                  "extraValue": 100
+              },
+              "createdAt": "2024-12-06T12:00:00Z"
+          },
+          {
+              "_id": "1836f1c79f1a5e001e8g7dy6",
+              "status": "approved",
+              "generalVision": "Descrição geral do segundo orçamento...",
+              "proposal": "Proposta do segundo projeto...",
+              "startDate": "2024-11-01",
+              "endDate": "2024-11-30",
+              "hoursAndValues": {
+                  "maintenanceHours": 8,
+                  "creationHours": 15,
+                  "developmentHours": 12,
+                  "integrationHours": 6,
+                  "extraHours": 1,
+                  "maintenanceValue": 400,
+                  "creationValue": 750,
+                  "developmentValue": 600,
+                  "integrationValue": 300,
+                  "extraValue": 50
+              },
+              "createdAt": "2024-12-08T01:29:39.025Z",
+              "updatedAt": "2024-12-08T01:29:39.025Z",
+          }
+      ]
+  }
+  ```
+
+## **3.3 Função: `getBudgetById`**
+
+A função `getBudgetById` é responsável por recuperar um orçamento específico pelo seu ID.
+
+**Etapas:**
+
+1. **Parâmetro de Entrada**:
+   - Obtém o ID do orçamento a partir do parâmetro de rota (`req.params.id`).
+
+2. **Busca no Banco de Dados**:
+   - Procura o orçamento no banco de dados utilizando o ID fornecido.
+
+3. **Validação da Existência**:
+   - Se o orçamento não for encontrado, retorna uma mensagem de erro (422) com `"Orçamento não encontrado!"`.
+
+4. **Resposta**:
+   - **Sucesso (200)**: Retorna os detalhes do orçamento.
+   - **Erro (422)**: Mensagem de erro indicando que o orçamento não foi encontrado.
+   - **Erro (500)**: Mensagem de erro interno com detalhes do problema.
+
+**Exemplo de Respostas**:
+
+- **Sucesso (200)**:
+
+  ```json
+  {
+      "budget": {
+          "_id": "6390f1c79f1a5e001e5b345a",
+          "status": "waiting",
+          "generalVision": "Descrição geral do orçamento...",
+          "proposal": "Proposta do projeto...",
+          "startDate": "2024-12-01",
+          "endDate": "2024-12-31",
+          "hoursAndValues": {
+              "maintenanceHours": 10,
+              "creationHours": 20,
+              "developmentHours": 15,
+              "integrationHours": 5,
+              "extraHours": 2,
+              "maintenanceValue": 500,
+              "creationValue": 1000,
+              "developmentValue": 750,
+              "integrationValue": 250,
+              "extraValue": 100
+          },
+          "createdAt": "2024-12-08T01:29:39.025Z",
+          "updatedAt": "2024-12-08T01:29:39.025Z",
+      }
+  }
+  ```
+  
+---

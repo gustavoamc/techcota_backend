@@ -40,7 +40,9 @@ const Budget = mongoose.model(
             integrationValue: { type: Number, required: true },
             extraValue: { type: Number, required: true },
         }
-    })
+    },
+    {timestamps: true}, // Adds `createdAt` and `updatedAt`
+)
 )
 
 module.exports = Budget

@@ -1,5 +1,6 @@
+const ObjectId = require('mongoose').Types.ObjectId
+
 const Budget = require('../models/Budget')
-const User = require('../models/User')
 
 const getToken = require('../helpers/get-token')
 const getUserByToken = require('../helpers/get-user-by-token')
@@ -38,24 +39,8 @@ module.exports = class BudgetController {
             res.status(422).json({message: 'O campo Data de término é obrigatório!'})
             return
         }
-        if(!maintenanceHours) {
-            res.status(422).json({message: 'O campo Horas de manutenção é obrigatório!'})
-            return
-        }
-        if(!creationHours) {
-            res.status(422).json({message: 'O campo Horas de criação é obrigatório!'})
-            return
-        }
-        if(!developmentHours) {
-            res.status(422).json({message: 'O campo Horas de desenvolvimento é obrigatório!'})
-            return
-        }
-        if(!integrationHours) {
-            res.status(422).json({message: 'O campo Horas de integração é obrigatório!'})
-            return
-        }
-        if(!extraHours) {
-            res.status(422).json({message: 'O campo Horas extras é obrigatório!'})
+        if(!maintenanceHours || !creationHours || !developmentHours || !integrationHours || !extraHours) {
+            res.status(422).json({message: 'Todos os campos de horas devem ser preenchidos!'})
             return
         }
 
@@ -64,6 +49,7 @@ module.exports = class BudgetController {
 
         // create a budget
         const newBudget = new Budget({
+            user: new ObjectId(user._id),
             status: "waiting",
             generalVision,
             proposal,
@@ -87,10 +73,6 @@ module.exports = class BudgetController {
             // save budget data
             const savedBudget = await newBudget.save()
 
-            // associate budget to user
-            user.budgets.push(savedBudget._id)
-            await user.save()
-
             res.status(201).json({
                 message: 'Orçamento criado com sucesso!',
                 budget: savedBudget,
@@ -101,5 +83,61 @@ module.exports = class BudgetController {
             res.status(500).json({message: error})
             return
         }
+    }
+    
+    static async getAllUserBudgets(req, res) {
+        const token = getToken(req)
+        const user = await getUserByToken(token)
+
+        // check if user exists
+        if (!user) {
+            res.status(422).json({
+                message: "Usuário não encontrado!",
+            })
+            return
+        }
+
+        try {
+            // get all budgets from user
+            const budgets = await Budget.find({user: user._id}).sort('-createdAt')
+
+            res.status(200).json({
+                budgets: budgets,
+            })
+            return
+        }
+        catch (error) {
+            res.status(500).json({message: error})
+            return
+        }
+    }
+
+    static async getBudgetById(req, res) {
+        const id = req.params.id
+        const token = getToken(req)
+        const user = await getUserByToken(token)
+
+        try {
+            const budget = await Budget.findOne({_id: id})
+            
+            if (!budget) {
+                res.status(422).json({message: 'Orçamento não encontrado!'})
+                return
+            }
+
+            if (user._id.toString() !== budget.user.toString()) {
+                res.status(422).json({message: 'Erro interno do sistema!'})
+                return
+            }
+
+            res.status(200).json({
+                budget: budget,
+            })
+            return
+        } catch (error) {
+            res.status(500).json({message: error})
+            return
+        }
+
     }
 }
