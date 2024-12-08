@@ -5,10 +5,9 @@ const verifyToken = require('../middlewares/verifyToken')
 
 router.post('/create', verifyToken, BudgetController.createBudget)
 router.get('/all', verifyToken, BudgetController.getAllUserBudgets)
-router.get('/:id', verifyToken, BudgetController.getAllUserBudgets)
+router.get('/:id', verifyToken, BudgetController.getBudgetById)
 router.put('/:id', verifyToken, BudgetController.updateBudget)
 router.delete('/:id', verifyToken, BudgetController.deleteBudget)
-
-//TODO: dashbord routes
+router.get('/', verifyToken, BudgetController.dashboard)
 
 module.exports = router

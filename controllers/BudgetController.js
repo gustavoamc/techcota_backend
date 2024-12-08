@@ -272,4 +272,44 @@ module.exports = class BudgetController {
         }
     }
         
+    static async dashboard(req, res) {
+        const token = getToken(req)
+        const user = await getUserByToken(token)
+
+        // check if user exists
+        if(!user){
+            res.status(422).json({
+                message: "Usuário não encontrado!",
+            })
+            return
+        }
+
+        const threeMonthsAgo = new Date()
+        threeMonthsAgo.setMonth(threeMonthsAgo.getMonth() - 3)
+
+        try{
+            const totalWaitingBudgetsCount = await Budget.countDocuments({
+                status: 'waiting', 
+                user: user._id
+            }).sort('-createdAt')
+
+            const totalApprovedBudgetsCount = await Budget.countDocuments({
+                status: 'approved', 
+                user: user._id
+            }).sort('-createdAt')
+
+            const lastThreeMonthsBudgets = await Budget.countDocuments({user: user._id, createdAt: {$gte: threeMonthsAgo}})
+
+            res.status(200).json({
+                totalWaitingBudgetsCount,
+                totalApprovedBudgetsCount,
+                lastThreeMonthsBudgets,
+            })
+            return
+        }
+        catch (error) {
+            res.status(500).json({message: error})
+            return
+        }
+    }
 }

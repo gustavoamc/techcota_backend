@@ -292,7 +292,8 @@ A função `getAllUserBudgets` é responsável por recuperar todos os orçamento
                   "integrationValue": 250,
                   "extraValue": 100
               },
-              "createdAt": "2024-12-06T12:00:00Z"
+              "createdAt": "2024-12-06T12:00:00Z",
+              "updatedAt": "2024-12-08T01:29:39.025Z",
           },
           {
               "_id": "1836f1c79f1a5e001e8g7dy6",
@@ -373,7 +374,7 @@ A função `getBudgetById` é responsável por recuperar um orçamento específi
   
 ---
 
-## **3.3 Função: `updateBudget`**
+## **3.4 Função: `updateBudget`**
 
 A função `updateBudget` atualiza os dados de um orçamento específico associado ao usuário autenticado.
 
@@ -425,7 +426,7 @@ A função `updateBudget` atualiza os dados de um orçamento específico associa
 
 ---
 
-## **3.4 Função: `deleteBudget`**
+## **3.5 Função: `deleteBudget`**
 
 A função `deleteBudget` remove um orçamento específico associado ao usuário autenticado.
 
@@ -447,5 +448,30 @@ A função `deleteBudget` remove um orçamento específico associado ao usuário
    - **Sucesso (200)**: Mensagem confirmando a exclusão do orçamento.
    - **Erro (422)**: Mensagens de erro indicando problemas de validação ou autorização.
    - **Erro (500)**: Mensagem de erro interno.
+
+---
+
+## **3.6 Função: `dashboard`**
+
+A função `dashboard` retorna métricas consolidadas sobre os orçamentos associados ao usuário autenticado.
+
+**Etapas:**
+
+1. **Autenticação do Usuário**:
+   - Obtém o token JWT da requisição e valida o usuário associado.
+   - Verifica se o usuário existe no sistema.
+
+2. **Cálculos de Métricas**:
+   - **Total de Orçamentos com Status `'waiting'`**:
+     - Conta todos os orçamentos do usuário com status "waiting".
+   - **Total de Orçamentos com Status `'approved'`**:
+     - Conta todos os orçamentos do usuário com status "approved".
+   - **Total de Orçamentos Criados nos Últimos 3 Meses**:
+     - Filtra os orçamentos criados nos últimos 3 meses usando o campo `createdAt`.
+
+3. **Resposta**:
+   - **Sucesso (200)**: Retorna as métricas calculadas.
+   - **Erro (422)**: Indica que o usuário não foi encontrado.
+   - **Erro (500)**: Retorna uma mensagem de erro interno.
 
 ---
