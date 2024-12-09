@@ -40,7 +40,10 @@ A função `register` é responsável por criar um novo usuário com dados pesso
    - **Sucesso (201)**: Retorna um token JWT e a mensagem de sucesso.
    - **Erro (422 ou 500)**: Retorna uma mensagem indicando o problema.
 
-6. **Estrutura do JSON para Teste**:
+6. **Envio de arquivo**:
+   - Um arquivo .png ou .jpg é esperado no campo `logo` para a empresa.
+
+7. **Estrutura do JSON para Teste**:
    - O exemplo abaixo ilustra os dados esperados na requisição para testar a funcionalidade de atualização de configurações:
 
 ```json
@@ -61,8 +64,7 @@ A função `register` é responsável por criar um novo usuário com dados pesso
   "address": "123 Tech Street, Silicon Valley, CA",
   "contactEmail": "contact@techcompany.com",
   "contactPhone": "(11) 99999-9999",
-  "website": "www.techcompany.com",
-  "logo": "company_logo.png"
+  "website": "www.techcompany.com"
 }
 ```
 
@@ -93,7 +95,10 @@ A função `login` autentica um usuário existente na aplicação.
    - **Sucesso (200)**: Retorna o token JWT.
    - **Erro (401 ou 422)**: Retorna mensagens de erro apropriadas.
 
-6. **Estrutura do JSON para Teste**:
+6. **Envio de arquivo**:
+   - Um arquivo .png ou .jpg é esperado no campo `logo` para a empresa.
+
+7. **Estrutura do JSON para Teste**:
    - O exemplo abaixo ilustra os dados esperados na requisição para testar a funcionalidade de atualização de configurações:
 
 ```json

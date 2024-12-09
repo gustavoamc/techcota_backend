@@ -8,8 +8,14 @@ const getUserByToken = require('../helpers/get-user-by-token');
 
 module.exports = class UserController {
     static async register(req, res) {
-        const { name, email, password, confirmpassword, companyName, cnpj, serviceRates, address, contactEmail, contactPhone, website, logo } = req.body;
-        //recieving all user data from the form, in individual inputs, and storing them in variables according to their respective models.
+        const { name, email, password, confirmpassword, companyName, cnpj, serviceRates, address, contactEmail, contactPhone, website } = req.body;
+        //recieving all user data (except logo) from the form, in individual inputs, and storing them in variables according to their respective models.
+
+        let logo = ''
+
+        if(req.file){
+            logo = req.file.filename //here we are receiving the image file from the form and storing it
+        }
 
         // validations
         if (!name) {
@@ -185,8 +191,15 @@ module.exports = class UserController {
     }
 
     static async updateUserSettings(req, res) {
-        const { companyName, cnpj, serviceRates, address, contactEmail, contactPhone, website, logo } = req.body
+        const { companyName, cnpj, serviceRates, address, contactEmail, contactPhone, website } = req.body
         const id = req.params.id
+        
+        let logo = ''
+        
+        if(req.file){
+            logo = req.file.filename //here we are receiving the image file from the form and storing it
+        }
+        
         const token = getToken(req)
 
         const user = await getUserByToken(token)
