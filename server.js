@@ -12,8 +12,11 @@ const app = express();
 dbConnection();
 
 // global middlewares
-app.use(cors());
 app.use(express.json());
+app.use(cors());
+
+// Public folder for images
+app.use(express.static('public'))
 
 // Routes
 app.use('/user', UserRoutes);
