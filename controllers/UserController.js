@@ -8,8 +8,35 @@ const getUserByToken = require('../helpers/get-user-by-token');
 
 module.exports = class UserController {
     static async register(req, res) {
-        const { name, email, password, confirmpassword, companyName, cnpj, serviceRates, address, contactEmail, contactPhone, website } = req.body;
         //recieving all user data (except logo) from the form, in individual inputs, and storing them in variables according to their respective models.
+        const { 
+            name, email, password, confirmPassword, 
+            companyName, cnpj, 
+            maintenance, creation, development, integration, extra,
+            address, contactEmail, contactPhone, website 
+        } = req.body;
+        
+        // const { 
+        //     name, 
+        //     email, 
+        //     password, 
+        //     confirmPassword, 
+        //     settings: {
+        //         companyName, 
+        //         cnpj, 
+        //         serviceRates: {
+        //             maintenance, 
+        //             creation, 
+        //             development, 
+        //             integration, 
+        //             extra
+        //         },
+        //         address, 
+        //         contactEmail, 
+        //         contactPhone, 
+        //         website
+        //     } 
+        // } = req.body; //TODO: Expected way to way to receive the data from the frontend, but coudn't make it work for now. Refactor when possible.
 
         let logo = ''
 
@@ -30,11 +57,11 @@ module.exports = class UserController {
             res.status(422).json({ message: "A senha é obrigatória!" })
             return
         }
-        if (!confirmpassword) {
+        if (!confirmPassword) {
             res.status(422).json({ message: "A confirmação de senha é obrigatória!" })
             return
         }
-        if (password !== confirmpassword) {
+        if (password !== confirmPassword) {
             res.status(422).json({ message: "As senhas precisam ser iguais!" })
             return
         }
@@ -46,7 +73,7 @@ module.exports = class UserController {
             res.status(422).json({ message: "O CNPJ é obrigatório!" })
             return
         }
-        if (!serviceRates.maintenance || !serviceRates.creation || !serviceRates.development || !serviceRates.integration || !serviceRates.extra){
+        if (!maintenance || !creation || !development || !integration || !extra){
             res.status(422).json({ message: "Nenhum valor por hora pode ficar vazio!" })
             return
         }
@@ -92,9 +119,26 @@ module.exports = class UserController {
             return
         }
 
-        //TODO: check if email is valid
+        //check if phone is valid
+        const phoneRegex = /^\(?\d{2}\)?\s?\d{4,5}-?\d{4}$/;
+        if (!phoneRegex.test(contactPhone)) {
+            res.status(422).json({ message: "O telefone deve ser válido!" })
+            return
+        }
 
-        //TODO: check if website is valid
+        // check if email is valid
+        const emailRegex = /^\S+@\S+\.\S+$/
+        if (!emailRegex.test(contactEmail)) {
+            res.status(422).json({ message: "Não é e-mail deve ser válido!" })
+            return
+        }
+
+        // check if website is valid
+        const websiteRegex = /^(https?:\/\/)?([\w-]+\.)+[\w-]{2,4}(\/[\w-]*)*\/?$/
+        if (!websiteRegex.test(website)) {
+            res.status(422).json({ message: "O site deve ser válido!" })
+            return
+        }
 
         // create a password
         const salt = await bcrypt.genSalt(12)
@@ -106,20 +150,20 @@ module.exports = class UserController {
             email,
             password: passwordHash,
             settings: {
-                companyName: companyName,
-                cnpj: cnpj,
+                companyName,
+                cnpj,
                 serviceRates: {
-                    maintenance: serviceRates.maintenance,
-                    creation: serviceRates.creation,
-                    development: serviceRates.development,
-                    integration: serviceRates.integration,
-                    extra: serviceRates.extra,
+                    maintenance,
+                    creation,
+                    development,
+                    integration,
+                    extra,
                 },
-                address: address,
-                contactEmail: contactEmail,
-                contactPhone: contactPhone,
-                website: website,
-                logo: logo,
+                address,
+                contactEmail,
+                contactPhone,
+                website,
+                logo,
             }
         })
 
@@ -191,8 +235,21 @@ module.exports = class UserController {
     }
 
     static async updateUserSettings(req, res) {
-        const { companyName, cnpj, serviceRates, address, contactEmail, contactPhone, website } = req.body
-        const id = req.params.id
+        const { 
+            companyName, 
+            cnpj, 
+            serviceRates: {
+                maintenance, 
+                creation, 
+                development, 
+                integration, 
+                extra
+            }, 
+            address, 
+            contactEmail, 
+            contactPhone, 
+            website 
+        } = req.body
         
         let logo = ''
         
@@ -220,7 +277,7 @@ module.exports = class UserController {
             res.status(422).json({ message: "O CNPJ é obrigatório!" })
             return
         }
-        if (!serviceRates.maintenance || !serviceRates.creation || !serviceRates.development || !serviceRates.integration || !serviceRates.extra){
+        if (!maintenance || !creation || !development || !integration || !extra){
             res.status(422).json({ message: "Nenhum valor por hora pode ficar vazio!" })
             return
         }

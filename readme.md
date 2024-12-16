@@ -52,19 +52,21 @@ A função `register` é responsável por criar um novo usuário com dados pesso
   "email": "user@techcompany.com",
   "password": "Aa123456_",
   "confirmpassword": "Aa123456_",
-  "companyName": "Tech Company",
-  "cnpj": "12.345.678/0001-90",
-  "serviceRates": {
-    "maintenance": 100,
-    "creation": 150,
-    "development": 150,
-    "integration": 180,
-    "extra": 120
-  },
-  "address": "123 Tech Street, Silicon Valley, CA",
-  "contactEmail": "contact@techcompany.com",
-  "contactPhone": "(11) 99999-9999",
-  "website": "www.techcompany.com"
+  "settings": {
+    "companyName": "Tech Company",
+    "cnpj": "12.345.678/0001-90",
+    "serviceRates": {
+      "maintenance": 100,
+      "creation": 150,
+      "development": 150,
+      "integration": 180,
+      "extra": 120
+    },
+    "address": "123 Tech Street, Silicon Valley, CA",
+    "contactEmail": "contact@techcompany.com",
+    "contactPhone": "(11) 99999-9999",
+    "website": "www.techcompany.com"
+  }
 }
 ```
 
@@ -162,23 +164,19 @@ A função `updateUserSettings` atualiza as configurações da empresa associada
 
 ```json
 {
-    "message": "Dados atualizados com sucesso!",
-    "data": {
-        "serviceRates": {
-            "maintenance": 100,
-            "creation": 150,
-            "development": 150,
-            "integration": 180,
-            "extra": 120
-        },
-        "companyName": "Tech Company",
-        "cnpj": "12.345.678/0001-90",
-        "address": "123 Tech Street, Silicon Valley, CA",
-        "contactEmail": "contact@techcompany.com",
-        "contactPhone": "(11) 99999-9999",
-        "website": "www.techcompany.com",
-        "logo": "company_logo.png"
-    }
+   "companyName": "Tech Company",
+   "cnpj": "12.345.678/0001-90",
+   "serviceRates": {
+      "maintenance": 100,
+      "creation": 150,
+      "development": 150,
+      "integration": 180,
+      "extra": 120
+   },
+   "address": "123 Tech Street, Silicon Valley, CA",
+   "contactEmail": "contact@techcompany.com",
+   "contactPhone": "(11) 99999-9999",
+   "website": "www.techcompany.com"
 }
 ```
 
