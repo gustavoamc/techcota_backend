@@ -129,7 +129,7 @@ module.exports = class UserController {
         // check if email is valid
         const emailRegex = /^\S+@\S+\.\S+$/
         if (!emailRegex.test(contactEmail)) {
-            res.status(422).json({ message: "Não é e-mail deve ser válido!" })
+            res.status(422).json({ message: "O e-mail deve ser válido!" })
             return
         }
 
@@ -238,13 +238,7 @@ module.exports = class UserController {
         const { 
             companyName, 
             cnpj, 
-            serviceRates: {
-                maintenance, 
-                creation, 
-                development, 
-                integration, 
-                extra
-            }, 
+            serviceRates, //maintenance, creation, development, integration, extra
             address, 
             contactEmail, 
             contactPhone, 
@@ -277,7 +271,7 @@ module.exports = class UserController {
             res.status(422).json({ message: "O CNPJ é obrigatório!" })
             return
         }
-        if (!maintenance || !creation || !development || !integration || !extra){
+        if (!serviceRates) { //maintenance, creation, development, integration, extra
             res.status(422).json({ message: "Nenhum valor por hora pode ficar vazio!" })
             return
         }
@@ -297,10 +291,6 @@ module.exports = class UserController {
             res.status(422).json({ message: "O site é obrigatório!" })
             return
         }
-        if (!logo) {
-            res.status(422).json({ message: "A logo é obrigatória!" })
-            return
-        }
         
         const newSettings = {
             companyName: companyName,
@@ -310,7 +300,7 @@ module.exports = class UserController {
             contactEmail: contactEmail,
             contactPhone: contactPhone,
             website: website,
-            logo: logo,
+            logo: logo ? logo : user.settings.logo,
         }
 
         user.settings = newSettings
