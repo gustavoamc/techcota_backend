@@ -36,6 +36,10 @@ const User = mongoose.model(
                     integration: { type: Number, required: true },
                     extra: { type: Number, required: true },
                 },
+                minInstallmentValue: {
+                    type: Number,
+                    required: true,
+                },
                 address: {
                     type: String,
                     required: true,

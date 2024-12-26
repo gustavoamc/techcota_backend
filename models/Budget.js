@@ -39,6 +39,10 @@ const Budget = mongoose.model(
             developmentValue: { type: Number, required: true },
             integrationValue: { type: Number, required: true },
             extraValue: { type: Number, required: true },
+        },
+        installments:{
+            type: Array,
+            required: true,
         }
     },
     {timestamps: true}, // Adds `createdAt` and `updatedAt`

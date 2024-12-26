@@ -5,11 +5,10 @@ const Budget = require('../models/Budget')
 const getToken = require('../helpers/get-token')
 const getUserByToken = require('../helpers/get-user-by-token')
 
-//budget "belongs to" user but is here to ease handling of the data
 module.exports = class BudgetController {
     static async createBudget(req, res) {
         // get data from req.body, except status which is set to "waiting" by default
-        const { generalVision, proposal, startDate, endDate, maintenanceHours, creationHours, developmentHours, integrationHours, extraHours } = req.body
+        const { generalVision, proposal, startDate, endDate, maintenanceHours, creationHours, developmentHours, integrationHours, extraHours, installments } = req.body
         const token = getToken(req)
 
         const user = await getUserByToken(token)
@@ -66,7 +65,8 @@ module.exports = class BudgetController {
                 developmentValue: developmentHours * rates.development,
                 integrationValue: integrationHours * rates.integration,
                 extraValue: extraHours * rates.extra,
-            }
+            },
+            installments
         })
 
         try {
@@ -141,9 +141,10 @@ module.exports = class BudgetController {
 
     }
 
+    //TODO Situation: when updating a budget, should i check if the rates changed ? or add a "ratesUsed" field to the budget ? It will affect the installments calculation
     static async updateBudget(req, res) {
         const id = req.params.id
-        const { status, generalVision, proposal, startDate, endDate, maintenanceHours, creationHours, developmentHours, integrationHours, extraHours } = req.body
+        const { status, generalVision, proposal, startDate, endDate, maintenanceHours, creationHours, developmentHours, integrationHours, extraHours, installments } = req.body
 
         const token = getToken(req)
         const user = await getUserByToken(token)

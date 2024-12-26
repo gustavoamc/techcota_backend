@@ -13,7 +13,7 @@ module.exports = class UserController {
             name, email, password, confirmPassword, 
             companyName, cnpj, 
             maintenance, creation, development, integration, extra,
-            address, contactEmail, contactPhone, website 
+            minInstallmentValue, address, contactEmail, contactPhone, website 
         } = req.body;
         
         // const { 
@@ -75,6 +75,10 @@ module.exports = class UserController {
         }
         if (!maintenance || !creation || !development || !integration || !extra){
             res.status(422).json({ message: "Nenhum valor por hora pode ficar vazio!" })
+            return
+        }
+        if (!minInstallmentValue) {
+            res.status(422).json({ message: "O valor mínimo da parcela é obrigatório!" })
             return
         }
         if (!address) {
@@ -159,6 +163,7 @@ module.exports = class UserController {
                     integration,
                     extra,
                 },
+                minInstallmentValue,
                 address,
                 contactEmail,
                 contactPhone,
@@ -239,6 +244,7 @@ module.exports = class UserController {
             companyName, 
             cnpj, 
             serviceRates, //maintenance, creation, development, integration, extra
+            minInstallmentValue,
             address, 
             contactEmail, 
             contactPhone, 
@@ -275,6 +281,10 @@ module.exports = class UserController {
             res.status(422).json({ message: "Nenhum valor por hora pode ficar vazio!" })
             return
         }
+        if (!minInstallmentValue) {
+            res.status(422).json({ message: "O valor mínimo da parcela é obrigatório!" })
+            return
+        }
         if (!address) {
             res.status(422).json({ message: "O endereço é obrigatório!" })
             return
@@ -296,6 +306,7 @@ module.exports = class UserController {
             companyName: companyName,
             cnpj: cnpj,
             serviceRates: serviceRates,
+            minInstallmentValue: minInstallmentValue,
             address: address,
             contactEmail: contactEmail,
             contactPhone: contactPhone,
