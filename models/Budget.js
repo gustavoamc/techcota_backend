@@ -28,6 +28,13 @@ const Budget = mongoose.model(
             type: Date,
             required: true,
         },
+        ratesUsed: {
+            maintenance: { type: Number, required: true },
+            creation: { type: Number, required: true },
+            development: { type: Number, required: true },
+            integration: { type: Number, required: true },
+            extra: { type: Number, required: true },
+        },
         hoursAndValues:{
             maintenanceHours: { type: Number, required: true },
             creationHours: { type: Number, required: true },

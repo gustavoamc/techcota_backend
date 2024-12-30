@@ -8,7 +8,9 @@ const getUserByToken = require('../helpers/get-user-by-token')
 module.exports = class BudgetController {
     static async createBudget(req, res) {
         // get data from req.body, except status which is set to "waiting" by default
-        const { generalVision, proposal, startDate, endDate, maintenanceHours, creationHours, developmentHours, integrationHours, extraHours, installments } = req.body
+        //unlike user creation, it's easier to handle data destructuring the object this way
+        const { generalVision, proposal, startDate, endDate, hoursAndValues, installments } = req.body
+        const { maintenanceHours, creationHours, developmentHours, integrationHours, extraHours} = hoursAndValues
         const token = getToken(req)
 
         const user = await getUserByToken(token)
@@ -38,8 +40,13 @@ module.exports = class BudgetController {
             res.status(422).json({message: 'O campo Data de término é obrigatório!'})
             return
         }
-        if(!maintenanceHours || !creationHours || !developmentHours || !integrationHours || !extraHours) {
-            res.status(422).json({message: 'Todos os campos de horas devem ser preenchidos!'})
+        if(maintenanceHours == 0 && 
+            creationHours == 0 && 
+            developmentHours == 0 && 
+            integrationHours == 0 && 
+            extraHours == 0
+        ) {
+            res.status(422).json({message: 'O orçamento deve ter pelo menos uma hora serviço!'})
             return
         }
 
@@ -54,6 +61,7 @@ module.exports = class BudgetController {
             proposal,
             startDate,
             endDate,
+            ratesUsed: rates,
             hoursAndValues: {
                 maintenanceHours,
                 creationHours,
@@ -144,7 +152,8 @@ module.exports = class BudgetController {
     //TODO Situation: when updating a budget, should i check if the rates changed ? or add a "ratesUsed" field to the budget ? It will affect the installments calculation
     static async updateBudget(req, res) {
         const id = req.params.id
-        const { status, generalVision, proposal, startDate, endDate, maintenanceHours, creationHours, developmentHours, integrationHours, extraHours, installments } = req.body
+        const { status, generalVision, proposal, startDate, endDate, ratesUsed, hoursAndValues, installments } = req.body
+        const { maintenanceHours, creationHours, developmentHours, integrationHours, extraHours } = hoursAndValues
 
         const token = getToken(req)
         const user = await getUserByToken(token)
@@ -171,9 +180,6 @@ module.exports = class BudgetController {
             return
         }
 
-        // get user's company service rates
-        const rates = user.settings.serviceRates
-
         // validations
         if (!status){
             res.status(422).json({message: 'O campo Status é obrigatório!'})
@@ -195,8 +201,13 @@ module.exports = class BudgetController {
             res.status(422).json({message: 'O campo Data de término é obrigatório!'})
             return
         }
-        if(!maintenanceHours || !creationHours || !developmentHours || !integrationHours || !extraHours) {
-            res.status(422).json({message: 'Todos os campos de horas devem ser preenchidos!'})
+        if(maintenanceHours == 0 && 
+            creationHours == 0 && 
+            developmentHours == 0 && 
+            integrationHours == 0 && 
+            extraHours == 0
+        ) {
+            res.status(422).json({message: 'O orçamento deve ter pelo menos uma hora serviço!'})
             return
         }
 
@@ -206,18 +217,20 @@ module.exports = class BudgetController {
             proposal,
             startDate,
             endDate,
+            ratesUsed,
             hoursAndValues: {
                 maintenanceHours,
                 creationHours,
                 developmentHours,
                 integrationHours,
                 extraHours,
-                maintenanceValue: maintenanceHours * rates.maintenance,
-                creationValue: creationHours * rates.creation,
-                developmentValue: developmentHours * rates.development,
-                integrationValue: integrationHours * rates.integration,
-                extraValue: extraHours * rates.extra,
-            }
+                maintenanceValue: maintenanceHours * ratesUsed.maintenance,
+                creationValue: creationHours * ratesUsed.creation,
+                developmentValue: developmentHours * ratesUsed.development,
+                integrationValue: integrationHours * ratesUsed.integration,
+                extraValue: extraHours * ratesUsed.extra,
+            },
+            installments,
         }
 
         try{
