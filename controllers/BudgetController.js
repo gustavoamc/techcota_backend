@@ -56,7 +56,7 @@ module.exports = class BudgetController {
         // create a budget
         const newBudget = new Budget({
             user: new ObjectId(user._id),
-            status: "waiting",
+            status: "pending",
             generalVision,
             proposal,
             startDate,
@@ -149,7 +149,6 @@ module.exports = class BudgetController {
 
     }
 
-    //TODO Situation: when updating a budget, should i check if the rates changed ? or add a "ratesUsed" field to the budget ? It will affect the installments calculation
     static async updateBudget(req, res) {
         const id = req.params.id
         const { status, generalVision, proposal, startDate, endDate, ratesUsed, hoursAndValues, installments } = req.body
@@ -302,8 +301,8 @@ module.exports = class BudgetController {
         threeMonthsAgo.setMonth(threeMonthsAgo.getMonth() - 3)
 
         try{
-            const totalWaitingBudgetsCount = await Budget.countDocuments({
-                status: 'waiting', 
+            const totalPendingBudgetsCount = await Budget.countDocuments({
+                status: 'pending', 
                 user: user._id
             }).sort('-createdAt')
 
@@ -315,7 +314,7 @@ module.exports = class BudgetController {
             const lastThreeMonthsBudgets = await Budget.countDocuments({user: user._id, createdAt: {$gte: threeMonthsAgo}})
 
             res.status(200).json({
-                totalWaitingBudgetsCount,
+                totalPendingBudgetsCount,
                 totalApprovedBudgetsCount,
                 lastThreeMonthsBudgets,
             })
