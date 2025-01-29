@@ -1,9 +1,12 @@
 const ObjectId = require('mongoose').Types.ObjectId
+const puppeteer = require('puppeteer')
+const path = require('path')
 
 const Budget = require('../models/Budget')
 
 const getToken = require('../helpers/get-token')
 const getUserByToken = require('../helpers/get-user-by-token')
+const makeLayout = require('../helpers/budget-html-layout-maker')
 
 module.exports = class BudgetController {
     static async createBudget(req, res) {
@@ -323,6 +326,75 @@ module.exports = class BudgetController {
         catch (error) {
             res.status(500).json({message: error})
             return
+        }
+    }
+
+    static async generatePDF(req, res) {
+        const id = req.params.id
+        const token = getToken(req)
+        const user = await getUserByToken(token)
+
+        // check if user exists
+        if (!user) {
+            res.status(422).json({
+                message: "Usuário não encontrado!",
+            })
+            return
+        }
+
+        // get budget and check if it exists
+        const budget = await Budget.findOne({_id: id})
+        if (!budget) {
+            res.status(422).json({message: 'Orçamento não encontrado!'})
+            return
+        }
+
+        // check if user registered this budget
+        if (user._id.toString() !== budget.user.toString()) {
+            res.status(422).json({message: 'Erro interno do sistema!'})
+            return
+        }
+
+        let htmlContent = makeLayout(budget, user);
+        
+        try {
+            const browser = await puppeteer.launch();
+            const page = await browser.newPage();
+            
+            // Configures the page
+            await page.setContent(htmlContent, { waitUntil: 'load' });
+            
+            // dynamically get the content height
+            const { scrollHeight, scrollWidth } = await page.evaluate(() => ({
+                scrollHeight: document.body.scrollHeight,
+                scrollWidth: document.body.scrollWidth,
+            }));
+            
+            // Define o tamanho do viewport para corresponder ao conteúdo completo
+            await page.setViewport({
+                width: scrollWidth,
+                height: scrollHeight,
+            });
+            
+            // Gera o PDF com o tamanho exato do conteúdo
+            const pdfBuffer = await page.pdf({
+                width: `8.5in`, // Define a largura como a do conteúdo
+                height: `${scrollHeight + 25}px`, // Define a altura como a do conteúdo
+                printBackground: true, // Inclui o fundo no PDF
+                margin: { top: 0, bottom: 0, left: 0, right: 0 }, // Remove margens para evitar cortes
+            });
+
+            await browser.close();
+
+            let date = new Date(Date.now());
+            let dateString = `${date.getDate()}${date.getMonth() + 1}${date.getFullYear()}-${date.getHours()}${date.getMinutes()}`;
+    
+            res.setHeader('Content-Type', 'application/pdf');
+            res.setHeader('Content-Disposition', `inline; filename="orcamento${dateString}.pdf"`);
+            res.end(pdfBuffer);
+        } catch (error) {
+            console.error('Erro ao gerar PDF:', error);
+            res.status(500).json({ error: 'Erro ao gerar PDF' });
         }
     }
 }
