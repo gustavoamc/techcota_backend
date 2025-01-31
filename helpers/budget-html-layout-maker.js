@@ -1,6 +1,6 @@
 require('dotenv').config(); // loads .env
 
-const makeLayout = (budget, user/*, logoPath*/) => { //TODO parei aqui (parte 1)
+const makeLayout = (budget, user) => {
     const { generalVision, proposal, startDate, endDate, ratesUsed, hoursAndValues, installments } = budget
     const {companyName, address, cnpj, contactPhone, contactEmail, website, logo} = user.settings
 
@@ -123,6 +123,9 @@ const makeLayout = (budget, user/*, logoPath*/) => { //TODO parei aqui (parte 1)
                 .bold, .subtitle span, td span {
                     font-weight: bold;
                 }
+                .nobr {
+                   white-space: nowrap;
+                }
                 .subtitle p {
                     text-decoration: underline;
                 }
@@ -182,7 +185,7 @@ const makeLayout = (budget, user/*, logoPath*/) => { //TODO parei aqui (parte 1)
                         <td>${item.service}</td>
                         <td class="centralize"><span>${item.hours}</span> horas</td>
                         <td>R$ <span>${item.rate.toFixed(2).replace('.',',')}</span></td>
-                        <td class="rightAlign"><span>R$ ${item.serviceTotal.toFixed(2).replace('.',',')}</span></td>
+                        <td class="rightAlign nobr"><span>R$ ${item.serviceTotal.toFixed(2).replace('.',',')}</span></td>
                     </tr>`
                 ).join('')}
                 <tr>
@@ -192,7 +195,7 @@ const makeLayout = (budget, user/*, logoPath*/) => { //TODO parei aqui (parte 1)
                         ).join('')}</p>
                     </td>
                     <td>
-                        <p><span>Total: R$ ${budgetTotal.toFixed(2).replace('.',',')}</span></p>
+                        <p>Total: <span class="nobr">R$ ${budgetTotal.toFixed(2).replace('.',',')}</span></p>
                     </td>
                 </tr>
                 <tr>
