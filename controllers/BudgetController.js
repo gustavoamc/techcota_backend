@@ -53,8 +53,9 @@ module.exports = class BudgetController {
             return
         }
 
-        // get user company service rates
+        // get user company service rates and minInstallmentValue used
         const rates = user.settings.serviceRates
+        const minInstallmentValue = user.settings.minInstallmentValue
 
         // create a budget
         const newBudget = new Budget({
@@ -77,6 +78,7 @@ module.exports = class BudgetController {
                 integrationValue: integrationHours * rates.integration,
                 extraValue: extraHours * rates.extra,
             },
+            minInstallmentValue: minInstallmentValue,
             installments
         })
 
@@ -154,7 +156,7 @@ module.exports = class BudgetController {
 
     static async updateBudget(req, res) {
         const id = req.params.id
-        const { status, generalVision, proposal, startDate, endDate, ratesUsed, hoursAndValues, installments } = req.body
+        const { status, generalVision, proposal, startDate, endDate, ratesUsed, hoursAndValues, installments, minInstallmentValue } = req.body
         const { maintenanceHours, creationHours, developmentHours, integrationHours, extraHours } = hoursAndValues
 
         const token = getToken(req)
@@ -232,6 +234,7 @@ module.exports = class BudgetController {
                 integrationValue: integrationHours * ratesUsed.integration,
                 extraValue: extraHours * ratesUsed.extra,
             },
+            minInstallmentValue,
             installments,
         }
 

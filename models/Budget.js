@@ -47,6 +47,10 @@ const Budget = mongoose.model(
             integrationValue: { type: Number, required: true },
             extraValue: { type: Number, required: true },
         },
+        minInstallmentValue: {
+            type: Number,
+            required: true,
+        },
         installments:{
             type: Array,
             required: true,
