@@ -143,9 +143,11 @@ module.exports = class BudgetController {
                 return
             }
 
-            res.status(200).json({
-                budget: budget,
-            })
+            budget.user = undefined
+            budget.__v = undefined
+            budget._id = undefined
+
+            res.status(200).json(budget)
             return
         } catch (error) {
             res.status(500).json({message: error})
