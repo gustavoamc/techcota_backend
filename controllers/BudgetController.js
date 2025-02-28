@@ -7,6 +7,7 @@ const Budget = require('../models/Budget')
 const getToken = require('../helpers/get-token')
 const getUserByToken = require('../helpers/get-user-by-token')
 const makeLayout = require('../helpers/budget-html-layout-maker')
+const { count } = require('console')
 
 module.exports = class BudgetController {
     static async createBudget(req, res) {
@@ -312,19 +313,36 @@ module.exports = class BudgetController {
             const totalPendingBudgetsCount = await Budget.countDocuments({
                 status: 'pending', 
                 user: user._id
-            }).sort('-createdAt')
+            })
 
             const totalApprovedBudgetsCount = await Budget.countDocuments({
                 status: 'approved', 
                 user: user._id
-            }).sort('-createdAt')
+            })
 
-            const lastThreeMonthsBudgets = await Budget.countDocuments({user: user._id, createdAt: {$gte: threeMonthsAgo}})
+            const lastThreeMonthsBudgets = await Budget.find({user: user._id, createdAt: {$gte: threeMonthsAgo}})
+
+            let lastThreeMonthsCount = [];
+            let today = new Date();
+
+            for (let i = 1; i <= 3; i++) { 
+                let date = new Date(today); 
+                date.setMonth(date.getMonth() - i);
+                let monthNum = date.toLocaleString('pt-BR', { month: 'numeric', year: '2-digit' });
+                lastThreeMonthsCount.push({month: monthNum, count: 0});
+                lastThreeMonthsBudgets.forEach(budget => {
+                    let budgetDate = new Date(budget.createdAt);
+                    let budgetMonth = budgetDate.toLocaleString('pt-BR', { month: 'numeric', year: '2-digit' });
+                    if (budgetMonth === monthNum) {
+                        lastThreeMonthsCount[i-1].count = lastThreeMonthsCount[i-1].count + 1;
+                    }
+                });
+            }
 
             res.status(200).json({
                 totalPendingBudgetsCount,
                 totalApprovedBudgetsCount,
-                lastThreeMonthsBudgets,
+                lastThreeMonthsCount,
             })
             return
         }
