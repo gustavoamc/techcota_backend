@@ -339,6 +339,8 @@ module.exports = class BudgetController {
                 });
             }
 
+            lastThreeMonthsCount = lastThreeMonthsCount.reverse()
+
             res.status(200).json({
                 totalPendingBudgetsCount,
                 totalApprovedBudgetsCount,
